@@ -34,19 +34,10 @@ class DataBase:
         self.cursor.execute(cmd) 
         self.conn.commit()
     
-    def get_all(self):
-        self.cursor.execute('SELECT * FROM Products')
+    def get_all(self, sql_cmd):
+        self.cursor.execute(sql_cmd)
         rows = self.cursor.fetchall()  
         return rows
-
-    def insert(self, sql_cmd):
-        self.execute(sql_cmd)
-    
-    def update(self, sql_cmd):
-        self.execute(sql_cmd)
-
-    def delete(self, sql_cmd):
-        self.execute(sql_cmd)
 
 
 class DataBaseAdapter(IDateBaseAdapter):
@@ -54,28 +45,28 @@ class DataBaseAdapter(IDateBaseAdapter):
         self.db_address = db_address
         self.table_name = 'Products'
         self.product_name_field = 'ProductName'
-        self.category_field = 'Category'
+        self.category_field = 'CategoryID'
         self.price_field = 'Price'
         self.amount_field = 'Amount'
-        
+
         self.db = DataBase(self.db_address)
         create_cmd = f"CREATE TABLE IF NOT EXISTS {self.table_name}"\
-                     f"(id INTEGER PRIMARY KEY, {self.product_name_field} TEXT, {self.category_field} TEXT, CategoryID INTEGER, "\
-                     f"{self.amount_field} INTEGER и {self.price_field} INTEGER)"
+                     f"(id INTEGER PRIMARY KEY, {self.product_name_field} TEXT UNIQUE, {self.category_field} INTEGER, "\
+                     f"{self.amount_field} INTEGER, {self.price_field} INTEGER)"
         self.db.execute(create_cmd)
 
     def insert(self, product_name, category, price, amount):
-        "INSERT INTO {self.table_name} VALUES (NULL,?,?,?)", (product, price, comment,)"
-        raise NotImplementedError
-    
+        cmd = f"INSERT INTO {self.table_name} VALUES (NULL,'{product_name}',{category},{price},{amount})"
+        self.db.execute(cmd)
+
     def delete(self, product_name):
-        "DELETE FROM {self.table_name} WHERE id=?"
-        raise NotImplementedError
-    
+        cmd = f"DELETE FROM {self.table_name} WHERE {self.product_name_field}={product_name}"
+        self.db.execute(cmd)
+
     def update(self, product_name, category, price, amount):
-        "UPDATE {self.table_name} SET product=?, price=? WHERE id=?"
-        raise NotImplementedError
-    
+        cmd = f"UPDATE {self.table_name} SET {self.category_field}={category}, {self.product_name_field}={price}, {self.amount_field}={amount} "\
+              f"WHERE {self.product_name_field}={product_name}"
+
     def get_all(self):
-        "SELECT * FROM {self.table_name}"
-        raise NotImplementedError
+        cmd = f"SELECT * FROM {self.table_name}"
+        return self.db.get_all(cmd)

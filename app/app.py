@@ -2,10 +2,8 @@ from database.db_adapter import DataBaseAdapter
 
 
 class App:
-    _db_address = None
-
-    def __init__(self) -> None:
-        self.db = DataBaseAdapter(App._db_address)
+    def __init__(self, db_address) -> None:
+        self.db = DataBaseAdapter(db_address)
 
     def save(self, product_name, category, price, amount):
         self.db.insert(product_name, category, price, amount)
