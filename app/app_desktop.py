@@ -27,9 +27,14 @@ class DesktopApp(App):
         self._create_entries()
         self._create_buttons()
         self._init_elements(
-            self.product_name_label, self.product_name, self.category_id_label, self.category_id, 
-            self.price_label, self.price, self.amount_label, self.amount, self.save_button, 
-            self.delete_button, self.update_button, self.show_all_button
+            self.product_name_label, self.product_name, 
+            self.category_id_label, self.category_id, 
+            self.price_label, self.price, 
+            self.amount_label, self.amount, 
+            self.save_button, 
+            self.delete_button, 
+            self.update_button, 
+            self.show_all_button
         )
 
         # Запускаем главный цикл обработки событий
@@ -45,7 +50,7 @@ class DesktopApp(App):
         self.price = tk.Entry(self.tk)
         self.amount_label = tk.Label(self.tk, text='Количество')
         self.amount = tk.Entry(self.tk)
-        
+
     def _create_buttons(self):
         # Создаем кнопку
         self.save_button = tk.Button(self.tk, text="Сохранить", command=self.save)
@@ -56,17 +61,42 @@ class DesktopApp(App):
     def _init_elements(self, *args):
         for element in args:
             element.pack()
+            
+    def _beautify_data(self, data):
+        output = 'Данные в БД:\n'
+        for item in data:
+            output += f"id: {item[0]}; product: {item[1]}; category: {item[2]}; price: {item[3]}; amount: {item[4]}\n"
+        return output
 
     def save(self):
-        return self.app.save(self.product_name.get(), self.category_id.get(), self.price.get(), self.amount.get())
+        product = self.product_name.get()
+        result = messagebox.askyesno('Подтверждение операции', message=f'Подтвердите операцию добавления продукта:"{product}" в базу данных')
+        if result:
+            messagebox.showinfo('Результат', 'Операция подтверждена')
+            return self.app.save(self.product_name.get(), self.category_id.get(), self.price.get(), self.amount.get())
+        else:
+            messagebox.showinfo('Результат', 'Операция отменена')
+            
 
     def delete(self):
-        return self.app.delete(self.product_name.get())
+        product = self.product_name.get()
+        result = messagebox.askyesno('Подтверждение операции', message=f'Подтвердите операцию удаление продукта:"{product}" из базы данных')
+        if result:
+            messagebox.showinfo('Результат', 'Операция подтверждена')
+            return self.app.delete(product)
+        else:
+            messagebox.showinfo('Результат', 'Операция отменена')
     
     def update(self):
-        return self.app.update(self.product_name.get(), self.category_id.get(), self.price.get(), self.amount.get())
+        product = self.product_name.get()
+        result = messagebox.askyesno('Подтверждение операции', message=f'Подтвердите операцию обновления данных продукта:"{product}" из базы данных')
+        if result:
+            messagebox.showinfo('Результат', 'Операция подтверждена')
+            return self.app.update(product, self.category_id.get(), self.price.get(), self.amount.get())
+        else:
+            messagebox.showinfo('Результат', 'Операция отменена')
 
     def show_all(self):
-        print(self.app.show_all())
-        messagebox.showinfo('Данные в БД', self.app.show_all())
+        data = self._beautify_data(self.app.show_all())
+        messagebox.showinfo('Данные в БД', data)
 

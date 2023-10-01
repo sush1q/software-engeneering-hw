@@ -52,7 +52,7 @@ class DataBaseAdapter(IDateBaseAdapter):
         self.db = DataBase(self.db_address)
         create_cmd = f"CREATE TABLE IF NOT EXISTS {self.table_name}"\
                      f"(id INTEGER PRIMARY KEY, {self.product_name_field} TEXT UNIQUE, {self.category_field} INTEGER, "\
-                     f"{self.amount_field} INTEGER, {self.price_field} INTEGER)"
+                     f"{self.price_field} INTEGER, {self.amount_field} INTEGER)"
         self.db.execute(create_cmd)
 
     def insert(self, product_name, category, price, amount):
@@ -60,12 +60,13 @@ class DataBaseAdapter(IDateBaseAdapter):
         self.db.execute(cmd)
 
     def delete(self, product_name):
-        cmd = f"DELETE FROM {self.table_name} WHERE {self.product_name_field}={product_name}"
+        cmd = f"DELETE FROM {self.table_name} WHERE {self.product_name_field}='{product_name}'"
         self.db.execute(cmd)
 
     def update(self, product_name, category, price, amount):
-        cmd = f"UPDATE {self.table_name} SET {self.category_field}={category}, {self.product_name_field}={price}, {self.amount_field}={amount} "\
-              f"WHERE {self.product_name_field}={product_name}"
+        cmd = f"UPDATE {self.table_name} SET {self.category_field}={category}, {self.price_field}={price}, {self.amount_field}={amount} "\
+              f"WHERE {self.product_name_field}='{product_name}'"
+        self.db.execute(cmd)
 
     def get_all(self):
         cmd = f"SELECT * FROM {self.table_name}"
